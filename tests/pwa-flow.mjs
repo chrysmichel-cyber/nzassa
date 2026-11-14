@@ -153,14 +153,25 @@ console.log('\n== 6. Bouton « Installer N’Zassa » ==');
   /* Chrome / Android / ordinateur : évènement beforeinstallprompt SIMULÉ */
   const { ctx, p } = await open({}, 'window.LCA_FORCE_SW=true;');
   await p.goto(URL0); await p.waitForTimeout(2500);
-  ok(await p.evaluate(() => { const b = document.querySelector('[data-pwa=install]'); return !b || b.hidden; }), 'pas de bouton tant que l’installation n’est pas possible');
+  ok(await p.evaluate(() => { const b = document.querySelector('[data-pwa=install]'); return b && !b.hidden; }), 'le bouton d’installation est visible dès l’accueil');
+  await p.click('[data-pwa=install]');
+  ok(await p.evaluate(() => { const d = document.querySelector('#pwaIos'); return d && !d.hidden && /Chrome ou Edge/.test(d.textContent); }), 'sans invite native, les consignes manuelles du navigateur s’affichent');
+  await p.click('[data-pwa=close]');
   await p.evaluate(() => { window.__prompted = 0; const e = new Event('beforeinstallprompt', { cancelable: true }); e.prompt = async () => { window.__prompted++; }; e.userChoice = Promise.resolve({ outcome: 'accepted' }); window.dispatchEvent(e); });
-  ok(await until(() => p.evaluate(() => { const b = document.querySelector('[data-pwa=install]'); return b && !b.hidden && /Installer N’Zassa/.test(b.textContent); })), 'le bouton « Installer N’Zassa » apparaît quand le navigateur propose l’installation (évènement simulé)');
+  ok(await until(() => p.evaluate(() => { const b = document.querySelector('[data-pwa=install]'); return b && !b.hidden && /Installer N’Zassa/.test(b.textContent); })), 'le bouton reste visible quand le navigateur propose son invite native');
   await p.click('[data-pwa=install]'); await p.waitForTimeout(400);
   ok(await p.evaluate(() => window.__prompted) === 1, 'un clic déclenche l’invite d’installation du navigateur');
-  ok(await p.evaluate(() => document.querySelector('[data-pwa=install]').hidden), 'le bouton disparaît après usage');
+  ok(await p.evaluate(() => !document.querySelector('[data-pwa=install]').hidden), 'le bouton reste accessible jusqu’à l’installation effective');
   await p.evaluate(() => window.dispatchEvent(new Event('appinstalled')));
-  ok(await p.evaluate(() => LCA.pwa.state.installed === true), 'évènement « appinstalled » pris en compte');
+  ok(await p.evaluate(() => LCA.pwa.state.installed === true && document.querySelector('[data-pwa=install]').hidden), 'évènement « appinstalled » pris en compte et bouton masqué');
+  await ctx.close();
+}
+{
+  /* Android sans beforeinstallprompt : le bouton ouvre les étapes du menu */
+  const { ctx, p } = await open({ userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36', viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true }, 'window.LCA_FORCE_SW=true;window.LCA_NO_FSGATE=true;');
+  await p.goto(URL0); await p.waitForTimeout(1500);
+  await p.click('[data-pwa=install]');
+  ok(await p.evaluate(() => { const d = document.querySelector('#pwaIos'); return d && !d.hidden && /Installer l’application/.test(d.textContent); }), 'Android : consignes du menu affichées sans invite native');
   await ctx.close();
 }
 {

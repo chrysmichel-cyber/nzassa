@@ -1009,6 +1009,7 @@ function menuHtml(){
    '<ul class="hm-stats" aria-label="Le contenu du jeu"><li><b>'+nL+'</b><span>langues</span></li><li><b>'+tot.t+'</b><span>contes</span></li><li><b>'+tot.r+'</b><span>recettes</span></li><li><b>'+tot.w+'</b><span>mots</span></li></ul></section>'+
    '<section class="hm-act"><div class="hm-main"><button class="mbtn big" data-m="new">'+ti('play')+'<span><b>Nouvelle aventure</b><small>Choisir un peuple sur la carte et créer ton personnage</small></span></button>'+
    '<button class="mbtn cont" data-m="continue"'+(cont?'':' disabled')+'>'+ti('resume')+'<span><b>Continuer</b><small>'+(cont?'Reprendre en '+esc(lang().name):'Aucune sauvegarde pour le moment')+'</small></span></button></div>'+
+   '<button class="btn ghost sm" data-pwa="install" type="button" style="margin:8px 0">Installer N’Zassa</button>'+
    '<div class="hm-tiles">'+tile('regions','Régions')+tile('learn','Apprendre')+tile('oral','Patrimoine oral')+tile('parcours','Mon parcours')+tile('collection','Collection')+tile('review','Relecture')+tile('account','Profil')+tile('settings','Paramètres')+'</div>'+
    '<div class="hm-mode">'+accCard()+ONL.card()+'</div><button class="hm-credits" data-m="credits">Crédits et licences</button></section></div>'+
    '<p class="mload">'+(worldReady?'Monde prêt.':'Chargement du monde…')+'</p>'}
@@ -1051,7 +1052,7 @@ function menuHtml(){
 function showWelcome(sc){
  oralLeave(sc||'home');menuScreen=sc||'home';welcomeOpen=true;$('#welcome').classList.toggle('home',menuScreen==='home');$('#stage').classList.add('menu');const w=$('#welcome');w.hidden=false;
  const c=$('#welcomeCard');c.classList.remove('in');c.innerHTML=menuHtml();void c.offsetWidth;c.classList.add('in');
- if(menuScreen==='home'&&!c.querySelector('[data-pwa=install]')){const ib=document.createElement('button');ib.className='btn ghost sm';ib.dataset.pwa='install';ib.hidden=true;ib.textContent='Installer N’Zassa';ib.style.marginTop='8px';c.appendChild(ib);if(LCA.pwa)LCA.pwa.render()}
+ if(menuScreen==='home'&&LCA.pwa)LCA.pwa.render();
  LCA.i18n.apply(c);const f=$('button:not([disabled])',c);if(f&&menuScreen!=='home')f.focus();if(typeof ONL!=='undefined')ONL.sync()}
 $('#welcomeCard').addEventListener('change',e=>{if(e.target.id==='voiceSel'){state.settings=state.settings||{};state.settings.voice=e.target.value;save();say(lang().hello)}});
 $('#welcomeCard').addEventListener('click',e=>{const b=e.target.closest('[data-play]');if(b){ONL.setPlay(b.dataset.play);showWelcome('home');return}if(e.target.closest('[data-onl=test]')){const a=$('#onlApi');if(a)ONL.setApi(a.value);ONL.test()}});
