@@ -18,20 +18,29 @@
   if(upd){b.hidden=false;b.dataset.k='update';b.innerHTML='<span>Une nouvelle version de N’Zassa est prête.</span><button class="btn warm sm" data-pwa="update">Actualiser</button><button class="btn ghost sm" data-pwa="later">Plus tard</button>'}
   else if(off){b.hidden=false;b.dataset.k='offline';b.innerHTML='<span><b>Hors connexion.</b> Le jeu solo et ta progression sur cet appareil restent disponibles ; le monde ouvert, les comptes et les quiz en ligne reviendront avec le réseau.</span>'}
   else{b.hidden=true;b.dataset.k=''}
-  document.querySelectorAll('[data-pwa=install]').forEach(x=>{x.hidden=st.installed||!(st.canPrompt||st.ios)})}
+  document.querySelectorAll('[data-pwa=install]').forEach(x=>{x.hidden=st.installed})}
  window.addEventListener('online',()=>{st.online=true;render();try{reg&&reg.update()}catch(e){}});
  window.addEventListener('offline',()=>{st.online=false;render()});
 
  /* ---------- installation ---------- */
  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;st.canPrompt=true;render()});
  window.addEventListener('appinstalled',()=>{deferred=null;st.canPrompt=false;st.installed=true;render()});
- function iosHelp(){
-  let d=$('#pwaIos');if(!d){d=document.createElement('div');d.id='pwaIos';d.className='glass';d.setAttribute('role','dialog');d.setAttribute('aria-label','Installer N’Zassa sur iPhone ou iPad');
-   d.innerHTML='<b>Installer N’Zassa</b><ol><li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche).</li><li>Choisis <b>Sur l’écran d’accueil</b>.</li><li>Valide avec <b>Ajouter</b>.</li></ol><button class="btn warm sm" data-pwa="close">Compris</button>';document.body.appendChild(d)}
+ function installHelp(){
+  let d=$('#pwaIos');if(!d){d=document.createElement('div');d.id='pwaIos';d.className='glass';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label','Installer N’Zassa');
+   document.body.appendChild(d)}
+  const steps=st.ios
+   ?'<ol><li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche).</li><li>Choisis <b>Sur l’écran d’accueil</b>.</li><li>Valide avec <b>Ajouter</b>.</li></ol>'
+   :/Android/i.test(ua)
+    ?'<ol><li>Ouvre le menu de ton navigateur (⋮ ou ⋯).</li><li>Choisis <b>Installer l’application</b> ou <b>Ajouter à l’écran d’accueil</b>, puis confirme.</li></ol>'
+    :/Macintosh/.test(ua)&&/Safari/.test(ua)&&!/(Chrome|Chromium|Edg)/.test(ua)
+     ?'<ol><li>Dans Safari, ouvre le menu <b>Fichier</b>.</li><li>Choisis <b>Ajouter au Dock</b>.</li></ol>'
+     :'<p>Dans Chrome ou Edge, utilise l’icône <b>Installer</b> dans la barre d’adresse ou le menu du navigateur. Sur un autre navigateur compatible, cherche <b>Installer N’Zassa</b> dans son menu.</p>';
+  const https=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  d.innerHTML='<b>Installer N’Zassa</b>'+steps+(!https?'<p>Le site doit être publié en <b>HTTPS</b> pour être installable.</p>':'')+'<button class="btn warm sm" data-pwa="close">Compris</button>';
   d.hidden=false}
  async function install(){
-  if(deferred){const e=deferred;deferred=null;st.canPrompt=false;try{await e.prompt();const c=await e.userChoice;st.lastChoice=c&&c.outcome}catch(_){}render();return st.lastChoice||null}
-  if(st.ios&&!st.installed){iosHelp();return 'ios'}
+  if(deferred){const e=deferred;deferred=null;st.canPrompt=false;try{await e.prompt();const c=await e.userChoice;st.lastChoice=c&&c.outcome}catch(_){installHelp();st.lastChoice='fallback'}render();return st.lastChoice||null}
+  if(!st.installed){installHelp();return st.ios?'ios':'manual'}
   return null}
  document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-pwa]');if(!t)return;const a=t.dataset.pwa;
   if(a==='install')install();
