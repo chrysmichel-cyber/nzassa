@@ -1,0 +1,130 @@
+{
+ "date": "2026-11-10T12:46:33.330Z",
+ "type": "SIMULÉ : clients WebSocket Node (pas de navigateurs)",
+ "cible": "serveur local lancé par le test",
+ "clients": 50,
+ "duree_s": 30,
+ "salons": 1,
+ "zone": 60,
+ "connexions": {
+  "demandees": 50,
+  "maintenuesAuMilieu": 50,
+  "maintenuesApresCoupures": 50,
+  "echecsDeConnexion": 0,
+  "fermeturesInattendues": 10,
+  "codesDeFermeture": {
+   "1000": 50,
+   "1006": 10
+  },
+  "erreursSocket": 0,
+  "erreursServeur": {}
+ },
+ "latence_ms": {
+  "aller_retour_ping": {
+   "n": 1440,
+   "p50": 0.8,
+   "p95": 4.6,
+   "p99": 6,
+   "max": 6
+  },
+  "chat_bout_en_bout": {
+   "n": 4798,
+   "p50": 49,
+   "p95": 94,
+   "p99": 100,
+   "max": 102
+  },
+  "deplacement_bout_en_bout": {
+   "n": 7426,
+   "p50": 39.5,
+   "p95": 99.9,
+   "p99": 912.3,
+   "max": 2751.9
+  },
+  "reconnexion_apres_coupure": {
+   "n": 10,
+   "p50": 564.7,
+   "p95": 714.7,
+   "p99": 714.7,
+   "max": 714.7
+  }
+ },
+ "livraison_chat": {
+  "envoyes": 96,
+  "receptionsAttendues": 4800,
+  "receptionsReelles": 4798,
+  "pct": 100,
+  "note": "l’émetteur reçoit aussi son message ; écart attendu : clients en cours de reconnexion ou hors zone d’intérêt (zone > 80)"
+ },
+ "debit": {
+  "messagesEnvoyes": 10542,
+  "messagesRecus": 16946,
+  "octetsRecus": 16112065,
+  "octetsEnvoyes": 460755,
+  "recu_par_client_par_s_ko": 9.3
+ },
+ "serveur": {
+  "cpu_moyen_pct_regime_etabli": 4.4,
+  "cpu_pic_pct": 9,
+  "ram_pic_mo": 86,
+  "health_milieu": {
+   "ok": true,
+   "uptime": 19,
+   "players": 50,
+   "capacity": 50,
+   "connections": 50,
+   "rssMB": 75,
+   "heapMB": 10,
+   "cpuMs": 861,
+   "loopMs": {
+    "p50": 10.13,
+    "p99": 12.21,
+    "max": 17.07
+   },
+   "rt": {
+    "accepted": 50,
+    "rejected": 0,
+    "msgsIn": 5212,
+    "msgsOut": 8799,
+    "bytesOut": 8158770,
+    "dropped": 0,
+    "closed": 0,
+    "violations": 0,
+    "badJson": 0
+   }
+  },
+  "health_fin": {
+   "ok": true,
+   "uptime": 34,
+   "players": 50,
+   "capacity": 50,
+   "connections": 50,
+   "rssMB": 85,
+   "heapMB": 10,
+   "cpuMs": 1505,
+   "loopMs": {
+    "p50": 10.13,
+    "p99": 12.3,
+    "max": 26.41
+   },
+   "rt": {
+    "accepted": 60,
+    "rejected": 0,
+    "msgsIn": 10542,
+    "msgsOut": 16946,
+    "bytesOut": 16112065,
+    "dropped": 0,
+    "closed": 10,
+    "violations": 0,
+    "badJson": 0
+   }
+  },
+  "boucle_evenements_ms": {
+   "p50": 10.13,
+   "p99": 12.3,
+   "max": 26.41
+  }
+ },
+ "redemarrage": null,
+ "joueursRestantsApresFermeture": 0
+}

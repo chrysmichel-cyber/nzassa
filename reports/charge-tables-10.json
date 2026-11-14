@@ -1,0 +1,190 @@
+{
+ "date": "2026-11-13T22:53:20.190Z",
+ "type": "SIMULÉ : clients WebSocket Node (pas de navigateurs)",
+ "cible": "serveur local lancé par le test",
+ "clients": 10,
+ "duree_s": 30,
+ "salons": 1,
+ "zone": 60,
+ "connexions": {
+  "demandees": 10,
+  "maintenuesAuMilieu": 10,
+  "maintenuesApresCoupures": 10,
+  "echecsDeConnexion": 0,
+  "fermeturesInattendues": 2,
+  "codesDeFermeture": {
+   "1000": 10,
+   "1006": 2
+  },
+  "erreursSocket": 0,
+  "erreursServeur": {}
+ },
+ "latence_ms": {
+  "aller_retour_ping": {
+   "n": 298,
+   "p50": 0.8,
+   "p95": 2.9,
+   "p99": 48,
+   "max": 48.1
+  },
+  "chat_bout_en_bout": {
+   "n": 208,
+   "p50": 49,
+   "p95": 92,
+   "p99": 102,
+   "max": 102
+  },
+  "deplacement_bout_en_bout": {
+   "n": 0,
+   "p50": null,
+   "p95": null,
+   "p99": null,
+   "max": null
+  },
+  "reconnexion_apres_coupure": {
+   "n": 2,
+   "p50": 652.2,
+   "p95": 652.2,
+   "p99": 652.2,
+   "max": 652.2
+  }
+ },
+ "livraison_chat": {
+  "envoyes": 21,
+  "receptionsAttendues": 210,
+  "receptionsReelles": 208,
+  "pct": 99,
+  "note": "l’émetteur reçoit aussi son message ; écart attendu : clients en cours de reconnexion ou hors zone d’intérêt (zone > 80)"
+ },
+ "debit": {
+  "messagesEnvoyes": 655,
+  "messagesRecus": 1316,
+  "octetsRecus": 1674370,
+  "octetsEnvoyes": 28770,
+  "recu_par_client_par_s_ko": 4.8
+ },
+ "serveur": {
+  "cpu_moyen_pct_regime_etabli": 2.1,
+  "cpu_pic_pct": 7,
+  "ram_pic_mo": 70,
+  "health_milieu": {
+   "ok": true,
+   "uptime": 19,
+   "players": 10,
+   "capacity": 50,
+   "proxy": {
+    "trustedProxiesConfigured": false,
+    "peer": "127.0.0.1",
+    "peerIsApproved": false,
+    "forwardedFor": null,
+    "resolvedClientIp": "127.0.0.1"
+   },
+   "connections": 10,
+   "rssMB": 65,
+   "heapMB": 9,
+   "cpuMs": 603,
+   "loopMs": {
+    "p50": 10.16,
+    "p99": 10.91,
+    "max": 12.89
+   },
+   "rt": {
+    "accepted": 10,
+    "rejected": 0,
+    "msgsIn": 397,
+    "msgsOut": 848,
+    "bytesOut": 1015323,
+    "dropped": 0,
+    "closed": 0,
+    "violations": 0,
+    "badJson": 0
+   },
+   "nameGuard": null,
+   "tables": {
+    "open": 5,
+    "started": 5,
+    "finished": 0,
+    "abandoned": 0,
+    "rejected": 0,
+    "moves": 227,
+    "botMoves": 0
+   }
+  },
+  "health_fin": {
+   "ok": true,
+   "uptime": 34,
+   "players": 10,
+   "capacity": 50,
+   "proxy": {
+    "trustedProxiesConfigured": false,
+    "peer": "127.0.0.1",
+    "peerIsApproved": false,
+    "forwardedFor": null,
+    "resolvedClientIp": "127.0.0.1"
+   },
+   "connections": 10,
+   "rssMB": 66,
+   "heapMB": 9,
+   "cpuMs": 830,
+   "loopMs": {
+    "p50": 10.15,
+    "p99": 10.99,
+    "max": 19.82
+   },
+   "rt": {
+    "accepted": 12,
+    "rejected": 0,
+    "msgsIn": 645,
+    "msgsOut": 1308,
+    "bytesOut": 1673994,
+    "dropped": 0,
+    "closed": 2,
+    "violations": 0,
+    "badJson": 0
+   },
+   "nameGuard": null,
+   "tables": {
+    "open": 5,
+    "started": 5,
+    "finished": 0,
+    "abandoned": 0,
+    "rejected": 0,
+    "moves": 310,
+    "botMoves": 0
+   }
+  },
+  "boucle_evenements_ms": {
+   "p50": 10.15,
+   "p99": 10.99,
+   "max": 19.82
+  }
+ },
+ "tables": {
+  "joueursAuxTables": 10,
+  "placesPrises": 10,
+  "reprisesApresCoupure": 2,
+  "coupsEnvoyes": 310,
+  "partiesTerminees": 0,
+  "revanchesDemandees": 0,
+  "erreurs": {},
+  "listesLegalesTropLongues": 0,
+  "coup_vers_etat_ms": {
+   "n": 300,
+   "p50": 1,
+   "p95": 1.6,
+   "p99": 3.4,
+   "max": 8.1
+  },
+  "metriques_serveur": {
+   "open": 5,
+   "started": 5,
+   "finished": 0,
+   "abandoned": 0,
+   "rejected": 0,
+   "moves": 310,
+   "botMoves": 0
+  }
+ },
+ "redemarrage": null,
+ "joueursRestantsApresFermeture": 0
+}

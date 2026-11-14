@@ -1,0 +1,32 @@
+# Blueprint Render pour le serveur temps réel N'Zassa (préparé, NON déployé). Voir docs/RENDER.md.
+services:
+  - type: web
+    name: nzassa-realtime
+    runtime: node
+    plan: starter            # le plan gratuit s'endort après inactivité et coupe les WebSocket : à éviter pour un monde ouvert
+    region: frankfurt        # à adapter : choisir la région la plus proche des joueurs
+    buildCommand: npm ci --omit=dev
+    startCommand: node server/server.cjs
+    healthCheckPath: /health
+    autoDeploy: false        # aucun déploiement automatique : tu déclenches toi-même
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: NZASSA_LEGACY_API   # ancien module SQLite/Python désactivé (disque éphémère)
+        value: "0"
+      - key: NZASSA_TRUSTED_PROXIES  # proxys APPROUVÉS (CIDR ou « private » / « loopback ») : X-Forwarded-For n'est lu que si la connexion vient d'eux. À VÉRIFIER après le premier déploiement avec /health?detail=1 (voir docs/RENDER.md)
+        value: private
+      - key: NZASSA_PROXY_HOPS
+        value: "1"
+      - key: NZASSA_MAX_PLAYERS
+        value: "50"
+      - key: NZASSA_CORS         # adresse EXACTE du site Netlify (séparer par des virgules s'il y en a plusieurs)
+        sync: false
+      - key: NZASSA_SUPABASE_URL # même URL de projet que le site (publique)
+        sync: false
+      - key: NZASSA_SUPABASE_KEY # clé PUBLIQUE sb_publishable_… (jamais sb_secret_ ni service_role)
+        sync: false
+      - key: NZASSA_METRICS_TOKEN # jeton aléatoire pour /health?detail=1 (généré par Render)
+        generateValue: true

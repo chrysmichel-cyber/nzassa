@@ -1,0 +1,41 @@
+# Déploiement Netlify de N'Zassa. Variables à définir dans Netlify (Site configuration > Environment variables) :
+#   NZASSA_SUPABASE_URL  = https://<projet>.supabase.co
+#   NZASSA_SUPABASE_KEY  = clé PUBLISHABLE (ou anon) du projet. JAMAIS la clé secrète / service_role.
+# Le build échoue si elles manquent, pour ne pas publier un site dont les comptes seraient silencieusement absents
+# (NZASSA_ALLOW_NO_ACCOUNTS=1 permet de publier volontairement sans comptes).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "microphone=(self), camera=(), geolocation=()"
+
+[[headers]]
+  for = "/js/supabase/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# PWA : le service worker et le manifeste ne doivent jamais être servis depuis un cache obsolète.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"

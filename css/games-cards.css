@@ -1,0 +1,67 @@
+/* Jeux de cartes N'Zassa (bataille, menteur, belote) : styles .gc-* . Aucune règle de jeu ici. Complète css/games-boards.css (.gb, .gb-status). */
+.gc{--gc-w:clamp(52px,13vw,76px);--gc-felt:#1f5a46;--gc-felt2:#163f33}
+.gc-svg{display:block;width:100%;height:auto}
+.gc-card{width:var(--gc-w);filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+.gc-card.gc-sm{width:calc(var(--gc-w)*.62)}
+.gc-felt{position:relative;display:grid;grid-template-rows:auto 1fr auto;justify-items:center;gap:8px;padding:12px;border-radius:18px;
+ background:radial-gradient(ellipse at 50% 40%,var(--gc-felt),var(--gc-felt2));border:2px solid #3a1c0e;box-shadow:inset 0 0 0 4px rgba(245,170,80,.25),0 10px 26px rgba(0,0,0,.35);min-height:220px}
+.gc-felt-s{display:block;min-height:0}
+.gc-side{display:flex;align-items:center;gap:10px}
+.gc-deck,.gc-pile{position:relative;display:inline-block}
+.gc-count{position:absolute;right:-8px;bottom:-6px;min-width:24px;padding:0 5px;border-radius:12px;background:var(--cream,#f6efe3);color:var(--ink,#2a130c);font-weight:800;font-size:13px;line-height:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.gc-empty{display:block;width:var(--gc-w);aspect-ratio:100/140;border:2px dashed rgba(255,255,255,.3);border-radius:8px}
+.gc-name{font-weight:700}
+.gc-mid{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:calc(var(--gc-w)*1.45)}
+.gc-trick{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.gc-play{display:inline-block;animation:gcIn .25s ease-out both}
+.gc-old{opacity:.75}
+.gc-msg{margin:4px 0 0;padding:4px 10px;border-radius:10px;background:rgba(0,0,0,.28);font-weight:600;font-size:14px;text-align:center}
+.gc-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.gc-actions[hidden]{display:none}
+.gc-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px;border-radius:12px;border:2px solid var(--accent,#f59a2e);background:rgba(245,154,46,.14);color:inherit;font:inherit;font-weight:700;cursor:pointer}
+.gc-btn.gc-main{background:var(--accent,#f59a2e);color:var(--accent-ink,#2a1500)}
+.gc-btn.gc-warn{border-color:#ff7a6b;background:rgba(255,122,107,.18)}
+.gc-btn.gc-must{background:#ff7a6b;color:#2a0a05;animation:gcPulse 1.2s ease-in-out infinite}
+.gc-btn[disabled]{opacity:.5;cursor:not-allowed}
+.gc-btn[hidden]{display:none}
+.gc-btn:focus-visible,.gc-c:focus-visible{outline:3px solid #fff3b0;outline-offset:2px}
+/* main en éventail (positions calculées par cards.util.fit) */
+.gc-hand{position:relative;width:100%;min-height:calc(var(--gc-w)*1.45);margin-top:6px}
+.gc-hand[hidden]{display:none}
+.gc-c{position:absolute;top:0;left:0;width:var(--gc-w);padding:0;margin:0;border:0;background:none;border-radius:8px;cursor:default;transition:transform .12s ease-out}
+.gc-c .gc-card{width:100%}
+.gc-c.gc-ok{cursor:pointer}
+.gc-c.gc-ok:hover{transform:translateY(-8px)}
+.gc-c.gc-sel{transform:translateY(-16px)}
+.gc-c.gc-sel .gc-card{filter:drop-shadow(0 0 0 #fff3b0) drop-shadow(0 0 6px #f59a2e)}
+.gc-c.gc-dim{filter:grayscale(.6) brightness(.7)}
+.gc-c.gc-trump::after{content:"";position:absolute;left:4px;right:4px;bottom:-5px;height:4px;border-radius:2px;background:var(--sky,#3fb8a4)}
+.gc-c[disabled]{cursor:not-allowed}
+/* menteur */
+.gc-opps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 8px}
+.gc-opp{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:6px 10px;border-radius:12px;background:var(--glass,rgba(40,20,12,.88));border:1px solid var(--line,rgba(245,170,80,.3))}
+.gc-opp .gc-mini{grid-row:1/3;width:28px}
+.gc-opp .gc-mini .gc-card{width:28px}
+.gc-turn{box-shadow:0 0 0 3px var(--accent,#f59a2e)}
+.gc-menteur .gc-mid{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:14px}
+.gc-info{flex:1 1 200px;max-width:340px}
+.gc-info p{margin:0 0 6px}
+.gc-row{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 6px}
+.gc-want{font-size:16px}
+/* belote : table à quatre places */
+.gc-score{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;margin:0 0 8px;font-size:14px}
+.gc-score svg{vertical-align:-3px}
+.gc-table4{grid-template-columns:1fr auto 1fr;grid-template-rows:auto 1fr auto;grid-template-areas:". t ." "l c r" ". b .";align-items:center;min-height:260px}
+.gc-p{display:flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:10px;background:rgba(0,0,0,.25);font-size:13px;text-align:center}
+.gc-p small{color:var(--muted,#d8c3a8)}
+.gc-pt{grid-area:t}.gc-pl{grid-area:l;justify-self:start}.gc-pr{grid-area:r;justify-self:end}.gc-pb{grid-area:b}
+.gc-center{grid-area:c;display:flex;flex-direction:column;align-items:center;gap:6px}
+.gc-up{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700}
+.gc-trick4{display:grid;grid-template-columns:repeat(3,calc(var(--gc-w)*.8));grid-template-rows:repeat(3,calc(var(--gc-w)*.62));grid-template-areas:". t ." "l . r" ". b .";place-items:center}
+.gc-trick4 .gc-card{width:calc(var(--gc-w)*.8)}
+.gc-st{grid-area:t}.gc-sl{grid-area:l}.gc-sr{grid-area:r}.gc-sb{grid-area:b}
+.gc-bids .gc-btn svg{flex:none}
+@keyframes gcIn{from{transform:translateY(-10px) scale(.92);opacity:0}to{transform:none;opacity:1}}
+@keyframes gcPulse{50%{box-shadow:0 0 0 6px rgba(255,122,107,.35)}}
+@media (prefers-reduced-motion:reduce){.gc *,.gc *::before,.gc *::after{animation:none!important;transition:none!important}}
+@media (max-width:420px){.gc{--gc-w:clamp(44px,15vw,60px)}.gc-felt{padding:8px}.gc-p{font-size:12px;padding:3px 6px}}

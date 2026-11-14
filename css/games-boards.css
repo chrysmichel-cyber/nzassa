@@ -1,0 +1,75 @@
+/* Plateaux de jeux (awalé, dames, échecs) : styles communs .gb-* . Aucune règle de jeu ici. */
+.gb{--gb-light:#ead2a6;--gb-dark:#8a5230;--gb-wood:#6b3a1f;--gb-wood2:#4a2418;--gb-focus:#fff3b0;--gb-legal:var(--accent,#f59a2e);--gb-last:rgba(63,184,164,.55);
+ position:relative;width:100%;max-width:560px;margin:0 auto;color:var(--fg,#f7f1e5);font-family:var(--body,system-ui,sans-serif);box-sizing:border-box;-webkit-user-select:none;user-select:none}
+.gb *{box-sizing:border-box}
+.gb-status{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;min-height:34px;padding:6px 12px;margin:0 0 8px;border-radius:12px;background:var(--glass,rgba(40,20,12,.88));border:1px solid var(--line,rgba(245,170,80,.3));font-weight:600;font-size:15px;line-height:1.25}
+.gb-status .gb-dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--accent,#f59a2e);transform:rotate(45deg)}
+.gb-status.gb-wait .gb-dot{background:transparent;border:2px solid var(--muted,#d8c3a8);border-radius:50%;transform:none}
+.gb-status.gb-over .gb-dot{background:var(--sky,#3fb8a4);border-radius:50%;transform:none}
+.gb-status small{font-weight:500;color:var(--muted,#d8c3a8)}
+.gb button{font:inherit;color:inherit}
+.gb :focus{outline:none}
+.gb :focus-visible{outline:3px solid var(--gb-focus);outline-offset:-3px;border-radius:6px;z-index:3}
+/* ---------- awalé ---------- */
+.gb-awboard{display:grid;grid-template-columns:minmax(0,.95fr) repeat(6,minmax(0,1fr)) minmax(0,.95fr);grid-template-rows:1fr 1fr;gap:clamp(3px,1.4vw,10px);padding:clamp(8px,2.5vw,16px);border-radius:22px;
+ background:repeating-linear-gradient(92deg,rgba(255,255,255,.035) 0 3px,rgba(0,0,0,.05) 3px 7px),linear-gradient(180deg,#8d5a33,#5e3219 60%,#4a2412);border:2px solid #3a1c0e;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.35),0 10px 26px rgba(0,0,0,.35)}
+.gb-pit,.gb-store{position:relative;border:0;padding:0;margin:0;cursor:default;display:block;aspect-ratio:1/1.02;border-radius:50%;
+ background:radial-gradient(circle at 50% 35%,#2e1409 0,#3d1d0d 45%,#58301a 100%);box-shadow:inset 0 5px 10px rgba(0,0,0,.65),inset 0 -2px 2px rgba(255,255,255,.12),0 1px 0 rgba(255,255,255,.14)}
+.gb-pit svg,.gb-store svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.gb-n{position:absolute;right:-2px;bottom:-4px;min-width:20px;padding:0 4px;border-radius:10px;background:var(--cream,#f6efe3);color:var(--ink,#2a130c);font-weight:800;font-size:clamp(11px,3.2vw,14px);line-height:18px;text-align:center;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.gb-pit.gb-mine{cursor:pointer}
+.gb-pit.gb-mine[aria-disabled=true]{opacity:.72;cursor:not-allowed}
+.gb-pit.gb-legal{box-shadow:inset 0 5px 10px rgba(0,0,0,.65),0 0 0 3px var(--gb-legal),0 0 14px rgba(245,154,46,.65)}
+.gb-pit.gb-legal::after{content:"";position:absolute;left:50%;top:-9px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top:9px solid var(--gb-legal)}
+.gb-awboard .gb-row-top .gb-pit.gb-legal::after{top:auto;bottom:-9px;border-top:0;border-bottom:9px solid var(--gb-legal)}
+.gb-pit.gb-last{box-shadow:inset 0 5px 10px rgba(0,0,0,.65),0 0 0 3px var(--sky,#3fb8a4)}
+.gb-pit.gb-end{outline:3px dashed var(--sky,#3fb8a4);outline-offset:2px}
+.gb-pit.gb-legal:hover,.gb-pit.gb-legal:focus-visible{filter:brightness(1.25)}
+.gb-store{grid-row:1/3;aspect-ratio:auto;border-radius:40% / 22%;background:radial-gradient(ellipse at 50% 30%,#2a1208,#44230f 70%,#58301a);padding:6px 0}
+.gb-store .gb-n{right:50%;transform:translateX(50%);bottom:6px;font-size:clamp(13px,3.8vw,17px);min-width:28px;line-height:22px}
+.gb-store .gb-who{position:absolute;left:0;right:0;top:6px;text-align:center;font-size:clamp(9px,2.6vw,11px);font-weight:700;color:var(--muted,#d8c3a8);letter-spacing:.02em}
+.gb-seed{transform-box:fill-box;transform-origin:center}
+.gb-pit.gb-pop .gb-seed,.gb-store.gb-pop .gb-seed{animation:gbPop .45s ease-out both;animation-delay:var(--d,0ms)}
+.gb-pit.gb-pop .gb-n,.gb-store.gb-pop .gb-n{animation:gbBump .45s ease-out both;animation-delay:var(--d,0ms)}
+.gb-pit.gb-cap{animation:gbCap .7s ease-out both;animation-delay:var(--d,0ms)}
+@keyframes gbPop{0%{transform:translateY(-14px) scale(.4);opacity:0}60%{transform:translateY(2px) scale(1.15);opacity:1}100%{transform:none;opacity:1}}
+@keyframes gbBump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes gbCap{0%{filter:brightness(1)}30%{filter:brightness(1.8) saturate(1.6)}100%{filter:none}}
+/* ---------- plateaux à cases (dames, échecs) ---------- */
+.gb-frame{padding:clamp(6px,2vw,12px);border-radius:14px;background:linear-gradient(180deg,#7a4626,#4f2713);border:2px solid #3a1c0e;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 26px rgba(0,0,0,.35)}
+.gb-grid{display:grid;width:100%;aspect-ratio:1/1;border-radius:4px;overflow:hidden;box-shadow:0 0 0 2px rgba(0,0,0,.45)}
+.gb-grid.g10{grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(10,minmax(0,1fr))}
+.gb-grid.g8{grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}
+.gb-row{display:contents}
+.gb-sq{position:relative;padding:0;margin:0;border:0;min-width:0;min-height:0;display:block;background:var(--gb-light);cursor:default;-webkit-tap-highlight-color:transparent}
+.gb-sq.d{background:var(--gb-dark)}
+.gb-sq.d::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.1),transparent 60%);pointer-events:none}
+.gb-sq svg.gb-pc{position:absolute;inset:6%;width:88%;height:88%;pointer-events:none;overflow:visible;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.gb-sq .gb-lbl{position:absolute;left:3px;top:1px;font-size:clamp(7px,1.9vw,10px);font-weight:700;color:rgba(255,235,200,.75);pointer-events:none;line-height:1}
+.gb-sq .gb-coord{position:absolute;right:3px;bottom:1px;font-size:clamp(7px,1.9vw,10px);font-weight:800;color:rgba(60,30,15,.7);pointer-events:none;line-height:1}
+.gb-sq.d .gb-coord{color:rgba(255,235,200,.8)}
+.gb-sq.gb-last{box-shadow:inset 0 0 0 100px var(--gb-last)}
+.gb-sq.gb-last::after{content:"";position:absolute;left:0;top:0;border-left:12px solid var(--sky,#3fb8a4);border-bottom:12px solid transparent;pointer-events:none}
+.gb-sq.gb-mv{cursor:pointer}
+.gb-sq.gb-mv .gb-ring{position:absolute;inset:4%;border:2px dashed rgba(255,243,176,.9);border-radius:50%;pointer-events:none}
+.gb-sq.gb-sel{box-shadow:inset 0 0 0 3px var(--gb-focus),inset 0 0 0 100px rgba(245,154,46,.35)}
+.gb-sq.gb-tgt{cursor:pointer}
+.gb-sq.gb-tgt .gb-mark{position:absolute;left:50%;top:50%;width:34%;height:34%;margin:-17% 0 0 -17%;border-radius:50%;background:var(--gb-legal);box-shadow:0 0 0 3px rgba(42,19,12,.7);pointer-events:none}
+.gb-sq.gb-tgt.gb-x .gb-mark{width:78%;height:78%;margin:-39% 0 0 -39%;background:transparent;border:4px solid var(--gb-legal);box-shadow:0 0 0 2px rgba(42,19,12,.7),inset 0 0 0 2px rgba(42,19,12,.7);border-radius:50%}
+.gb-sq.gb-tgt.gb-x .gb-mark::before,.gb-sq.gb-tgt.gb-x .gb-mark::after{content:"";position:absolute;left:50%;top:50%;width:70%;height:4px;margin:-2px 0 0 -35%;background:var(--gb-legal);transform:rotate(45deg)}
+.gb-sq.gb-tgt.gb-x .gb-mark::after{transform:rotate(-45deg)}
+.gb-sq.gb-chk{box-shadow:inset 0 0 0 100px rgba(255,122,107,.55)}
+.gb-sq.gb-chk::after{content:"!";position:absolute;right:3px;top:0;font-weight:900;font-size:clamp(11px,3vw,16px);color:#fff;text-shadow:0 1px 2px #000}
+.gb-sq.gb-tgt:hover,.gb-sq.gb-mv:hover{filter:brightness(1.12)}
+.gb-pc.gb-slide{animation:gbSlide .28s ease-out both}
+@keyframes gbSlide{from{transform:translate(var(--dx,0),var(--dy,0))}to{transform:none}}
+.gb-choose{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 0;padding:10px;border-radius:14px;background:var(--glass,rgba(40,20,12,.88));border:1px solid var(--line,rgba(245,170,80,.3))}
+.gb-choose[hidden]{display:none}
+.gb-choose .gb-q{flex:1 0 100%;text-align:center;font-weight:700;font-size:14px}
+.gb-choose button{display:flex;align-items:center;gap:6px;min-height:48px;min-width:48px;padding:6px 12px;border-radius:12px;border:2px solid var(--accent,#f59a2e);background:rgba(245,154,46,.14);cursor:pointer;font-weight:700;font-size:14px}
+.gb-choose button:hover,.gb-choose button:focus-visible{background:var(--accent,#f59a2e);color:var(--accent-ink,#2a1500)}
+.gb-choose button svg{width:34px;height:34px;flex:none}
+@media (prefers-reduced-motion:reduce){
+ .gb *,.gb *::before,.gb *::after{animation:none!important;transition:none!important}
+}
+@media (max-width:420px){.gb-status{font-size:14px;padding:5px 10px}.gb-sq .gb-lbl{left:1px}}

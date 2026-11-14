@@ -1,0 +1,50 @@
+/* Panneau des jeux de société (#gamePanel) et invitation (#gameInv). Même charte que le reste (variables de css/styles.css). */
+#gamePanel{position:fixed;z-index:30;left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto;overscroll-behavior:contain;
+ padding:12px 14px 16px;border-radius:22px;border:1px solid var(--line);color:var(--fg);font-family:var(--body)}
+#gamePanel[hidden],#gameInv[hidden]{display:none}
+#gamePanel .gph{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+#gamePanel .gph div{flex:1;min-width:0}
+#gamePanel .gph small{color:var(--muted);font-size:12.5px}
+#gamePanel .gph h2{margin:0;font-family:var(--display);font-size:20px;line-height:1.15}
+#gamePanel .lx{color:var(--fg);font-size:24px;cursor:pointer}
+#gamePanel section+section{margin-top:12px}
+#gamePanel h3{margin:0 0 6px;font-size:15px}
+#gamePanel .gpn{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:rgba(245,154,46,.16);border:1px solid var(--line);font-weight:600}
+#gamePanel .gpn.bad{background:rgba(255,122,107,.16)}
+#gamePanel .gpseg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+#gamePanel .gpseg button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--fg);font-weight:700;cursor:pointer}
+#gamePanel .gpseg button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#gamePanel .gpseats{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;padding:0;list-style:none}
+#gamePanel .gpseats li{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:13.5px}
+#gamePanel .gpseats li.turn{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+#gamePanel .gpseats li.down{opacity:.6}
+#gamePanel .gpk{font-size:11px;padding:1px 6px;border-radius:6px;background:rgba(0,0,0,.3);color:var(--muted)}
+#gamePanel .gpclock{font-variant-numeric:tabular-nums;font-weight:800}
+#gamePanel .gpclock.low{color:var(--bad)}
+#gamePanel .gpbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+#gamePanel .gpbar .btn{flex:1 1 140px}
+#gamePanel .gpsay{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+#gamePanel .gpsay button{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--fg);font-size:13px;cursor:pointer}
+#gamePanel .gpchat{min-height:20px;margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+#gamePanel details{margin-top:10px}
+#gamePanel summary{cursor:pointer;font-weight:700}
+#gamePanel ol.gphist{display:flex;flex-wrap:wrap;gap:4px 10px;max-height:110px;overflow:auto;margin:6px 0 0;padding:0 0 0 22px;font-size:13px;color:var(--muted)}
+#gamePanel ol.gprank{margin:0;padding:0;list-style:none}
+#gamePanel ol.gprank li{display:grid;grid-template-columns:32px 1fr auto;gap:8px;padding:6px 8px;border-bottom:1px solid var(--line)}
+#gamePanel .gpconfirm{margin:10px 0 0;padding:10px;border-radius:12px;background:rgba(255,122,107,.14);border:1px solid rgba(255,122,107,.5)}
+#gamePanel .gpplayers{display:flex;flex-direction:column;gap:6px;margin:6px 0 0}
+#gamePanel .gpplayers button{text-align:left}
+#gamePanel label.gpchk{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px}
+#gamePanel label.gpchk input{width:20px;height:20px}
+#gameInv{position:fixed;z-index:31;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(420px,calc(100vw - 16px));padding:12px 14px;border-radius:18px;border:1px solid var(--line);color:var(--fg)}
+#gameInv p{margin:0 0 8px}
+@media (max-width:420px){#gamePanel{padding:10px 8px 12px;border-radius:16px}#gamePanel .gph h2{font-size:17px}}
+/* Phase 4 (social) : gestes et portée du chat, dans la discussion du village */
+.emb{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.emb button,.csc{min-height:36px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer}
+.csc{flex:none}
+.emb[hidden],.csc[hidden]{display:none}
+.csc[aria-pressed=true]{background:var(--sky);border-color:var(--sky);color:var(--sky-ink)}
+#chatLog .near b{color:var(--sky)}
+#chatLog .near i{font-style:normal;font-size:11px;color:var(--muted);margin-right:4px}
+#chatLog .act{color:var(--accent);font-weight:700}
