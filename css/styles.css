@@ -1057,3 +1057,8 @@ button:not(:disabled):active,.btn:active,.mbtn:active,.tile:active{transform:sca
 #pwaBar[hidden],#pwaIos[hidden]{display:none}
 #pwaIos{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:70;max-width:min(360px,calc(100vw - 32px));padding:16px 18px;border-radius:18px;color:var(--fg);font:500 14px/1.45 var(--body)}
 #pwaIos ol{margin:8px 0 12px;padding-left:20px}
+
+/* Chat privé (1-à-1) */
+#chatLog .pm{background:rgba(255,200,120,.1);border-left:3px solid var(--accent);padding:2px 6px;border-radius:6px;cursor:pointer}
+#chatLog .pm i{font-style:normal;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);margin-right:6px}
+#chatScope[aria-pressed="true"]{max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

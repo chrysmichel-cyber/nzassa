@@ -65,3 +65,13 @@
 @keyframes gcPulse{50%{box-shadow:0 0 0 6px rgba(255,122,107,.35)}}
 @media (prefers-reduced-motion:reduce){.gc *,.gc *::before,.gc *::after{animation:none!important;transition:none!important}}
 @media (max-width:420px){.gc{--gc-w:clamp(44px,15vw,60px)}.gc-felt{padding:8px}.gc-p{font-size:12px;padding:3px 6px}}
+/* Téléphone en paysage : cartes plus petites pour que la table et la main tiennent dans la hauteur de l'écran */
+@media (orientation:landscape) and (max-height:520px){
+ .gc{--gc-w:clamp(30px,8.6dvh,46px)}
+ .gc-felt{min-height:0;padding:6px;gap:4px;border-radius:12px}
+ .gc-mid{min-height:0;gap:3px}.gc-msg{margin:2px 0 0;padding:2px 8px;font-size:12px}
+ .gc-actions{margin:4px 0;gap:6px}.gc-btn{min-height:36px;padding:4px 10px;font-size:13px}
+ .gc-hand{margin-top:2px;min-height:calc(var(--gc-w)*1.5)}
+ .gc-opp{padding:3px 8px;font-size:12px}.gc-opps{margin:0 0 4px}
+ .gc-count{font-size:11px;line-height:16px;min-width:18px}
+}

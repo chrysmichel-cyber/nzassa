@@ -48,3 +48,22 @@
 #chatLog .near b{color:var(--sky)}
 #chatLog .near i{font-style:normal;font-size:11px;color:var(--muted);margin-right:4px}
 #chatLog .act{color:var(--accent);font-weight:700}
+/* Téléphone en paysage : plateau à gauche (taille réglée sur la HAUTEUR de l'écran), joueurs et boutons à droite. Plus de défilement pour voir le plateau. */
+@media (orientation:landscape) and (max-height:520px){
+ #gamePanel{width:min(calc(100vw - 16px),860px);height:calc(100dvh - 12px);max-height:none;overflow:hidden;padding:8px 10px;border-radius:16px;
+  display:grid;grid-template-columns:auto minmax(190px,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:12px;row-gap:4px;align-items:start}
+ #gamePanel #gpBoard{grid-column:1;grid-row:1/3;align-self:center}
+ #gamePanel #gpTop{grid-column:2;grid-row:1;min-width:0}
+ #gamePanel #gpCtl{grid-column:2;grid-row:2;min-width:0;min-height:0;max-height:100%;overflow:auto;overscroll-behavior:contain}
+ #gamePanel .gb{width:min(560px,calc(100dvh - 78px),52vw);max-width:none;margin:0}
+ #gamePanel .gb-status{min-height:26px;padding:3px 8px;margin:0 0 4px;font-size:12.5px}
+ #gamePanel .gph{margin:0 0 4px}#gamePanel .gph h2{font-size:16px}#gamePanel .gph small{font-size:11px}
+ #gamePanel .lx{font-size:20px;min-width:40px;min-height:40px}
+ #gamePanel .gpseats{margin:0 0 4px}#gamePanel .gpseats li{padding:2px 8px;font-size:12px}
+ #gamePanel .gpbar{margin:6px 0 0}#gamePanel .gpbar .btn{flex:1 1 120px;min-height:38px;padding:0 10px;font-size:13px}
+ #gamePanel .gpsay{margin:6px 0 0}#gamePanel .gpsay button{min-height:32px;font-size:12px;padding:0 9px}
+ #gamePanel .gpn{margin:0 0 6px;padding:6px 10px;font-size:13px}
+ #gamePanel details{margin-top:6px}
+ /* écrans « menu / salon » sans plateau : une seule colonne, défilement interne */
+ #gamePanel:has(#gpBoard:empty){display:block;overflow:auto;height:auto;max-height:calc(100dvh - 12px)}
+}

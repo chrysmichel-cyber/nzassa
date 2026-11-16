@@ -2341,6 +2341,7 @@ const ONL=(function(){
  function ensure(){const b=cfgBase();if(!validBase(b))return null;if(!client||clientBase!==b){if(wc){wc.stop();wc.leave()}client=LCA.online.create({apiBase:b});clientBase=b;
    const api=typeof WebSocket!=='undefined'&&LCA.worldSocket?LCA.worldSocket.create({apiBase:b,getToken:()=>ACC.accessToken(),onFatal}):client.world;curApi=api;if(api.onQuiz){api.onQuiz(m=>{if(LCA.quizUI)LCA.quizUI.onEvent(m)});api.onReopen(()=>{if(LCA.quizUI)LCA.quizUI.reopened()})}
    if(api.onActivity)api.onActivity(m=>onActivity(m));
+   if(api.onPm)api.onPm(m=>onPm(m));
    if(api.onTables){api.onTables(m=>{if(LCA.gamesBus)LCA.gamesBus.dispatch(m)});api.onReopen(()=>{if(LCA.gamesBus)LCA.gamesBus.reopened()})}
    wc=LCA.worldClient.create({api,me,onChat:onMsg,onStatus:onStatus});joinedRoom=null;joinedKind=null}return wc}
  function pseudo(){const n=(heroName()||'').trim();return n.length>=2?n:'Voyageur'}
@@ -2363,6 +2364,7 @@ const ONL=(function(){
  const badge=()=>{const b=$('#chatBadge');b.hidden=!unread;b.textContent=unread>9?'9+':unread};
  function addLine(m){const l=$('#chatLog');if(!l)return;const p=document.createElement('p');
   if(m.act){p.className='act';p.textContent=m.text}
+  else if(m.pm){p.className='pm'+(m.mine?' me':'');const i=document.createElement('i');i.textContent='privé';const b=document.createElement('b');b.textContent=m.mine?'Toi → '+m.toName+' : ':m.name+' (privé) : ';p.append(i,b,document.createTextNode(m.text));p.dataset.pm=m.mine?m.to:m.id;p.title='Répondre en privé'}
   else if(m.sys||m.err){p.className=m.err?'err':'sys';p.textContent=m.text}else{if(m.near){const i=document.createElement('i');i.textContent='proche';p.appendChild(i)}const b=document.createElement('b');b.textContent=m.name+' : ';p.appendChild(b);p.appendChild(document.createTextNode(m.text));p.className=(mineName&&m.name===mineName?'me':'')+(m.near?' near':'')}
   l.appendChild(p);while(l.children.length>80)l.removeChild(l.firstChild);l.scrollTop=l.scrollHeight}
  let mineName='',myPub=null,myEm=null;
@@ -2383,24 +2385,27 @@ const ONL=(function(){
   if(!wanted()||welcomeOpen)closeChat()}
  function renderPlayers(){const box=$('#chatPl');if(!box||!wc)return;box.textContent='';$('#chatPlS').textContent='Joueurs ('+wc.players.size+') · masquer ou signaler';
   wc.players.forEach(q=>{const d=document.createElement('div'),b=document.createElement('b'),m=document.createElement('button'),r=document.createElement('button');b.textContent=q.name+(q.k==='g'?' (invité)':'');
-   const hid=wc.muted.has(q.id);m.type='button';m.textContent=hid?'Afficher':'Masquer';m.dataset.cm=q.id;r.type='button';r.textContent='Signaler';r.dataset.cr=q.id;d.append(b,m,r);box.appendChild(d)})}
+   const hid=wc.muted.has(q.id);m.type='button';m.textContent=hid?'Afficher':'Masquer';m.dataset.cm=q.id;r.type='button';r.textContent='Signaler';r.dataset.cr=q.id;if(curApi&&curApi.privateChat){const w=document.createElement('button');w.type='button';w.textContent='Écrire';w.dataset.cp=q.id;d.append(b,w,m,r)}else d.append(b,m,r);box.appendChild(d)});if(chatTo&&!wc.players.has(chatTo.id)){chatTo=null;scopeUi()}}
  function openChat(){if(!wc||!joinedRoom)return;scopeUi();chatOpen=true;unread=0;badge();$('#chat').hidden=false;renderPlayers();ui();const l=$('#chatLog');l.scrollTop=l.scrollHeight;if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>$('#chatIn').focus(),30)}
  function closeChat(){chatOpen=false;const c=$('#chat');if(c)c.hidden=true;const i=$('#chatIn');if(i)i.blur()}
  $('#chatBtn').onclick=()=>chatOpen?closeChat():openChat();
  $('#chatX').onclick=closeChat;
   /* portée du chat : tout le village, ou seulement les joueurs proches (WebSocket) */
- let chatNear=false;
- const scopeUi=()=>{const b=$('#chatScope');if(!b)return;const can=!!(curApi&&curApi.nearChat);if(!can)chatNear=false;b.hidden=!can;b.setAttribute('aria-pressed',String(chatNear));b.textContent=chatNear?'À proximité':'Village';
-  const i=$('#chatIn');if(i)i.placeholder=chatNear?'Message aux joueurs proches (texte seulement)…':'Écrire un message (texte seulement)…';const eb=$('#emoteBar');if(eb)eb.hidden=!(curApi&&curApi.emote)};
- $('#chatScope').onclick=()=>{chatNear=!chatNear;scopeUi()};
- $('#chatF').addEventListener('submit',e=>{e.preventDefault();const i=$('#chatIn'),v=i.value.trim();if(!v||!wc)return;wc.say(v,{near:chatNear});i.value=''});
+ let chatNear=false,chatTo=null;
+ const scopeUi=()=>{const b=$('#chatScope');if(!b)return;const can=!!(curApi&&curApi.nearChat);if(!can)chatNear=false;b.hidden=!can&&!chatTo;b.setAttribute('aria-pressed',String(chatNear||!!chatTo));b.textContent=chatTo?'Privé · '+chatTo.name:chatNear?'À proximité':'Village';
+  const i=$('#chatIn');if(i)i.placeholder=chatTo?'Message privé à '+chatTo.name+' (texte seulement)…':chatNear?'Message aux joueurs proches (texte seulement)…':'Écrire un message (texte seulement)…';const eb=$('#emoteBar');if(eb)eb.hidden=!(curApi&&curApi.emote)};
+ $('#chatScope').onclick=()=>{if(chatTo){chatTo=null}else chatNear=!chatNear;scopeUi()};
+ function writeTo(id){const q=wc&&wc.players.get(id);if(!q)return;chatTo={id:q.id,name:q.name};scopeUi();const d=$('#chatPlD');if(d)d.open=false;const i=$('#chatIn');if(i&&!matchMedia('(pointer:coarse)').matches)i.focus()}
+ function onPm(m){if(!m||!m.text)return;if(!m.mine&&wc&&wc.muted.has(m.id))return;addLine(Object.assign({pm:true},m));if(!m.mine&&!chatOpen){unread++;badge();toast('Message privé de '+m.name+' — ouvre la discussion pour répondre.')}}
+ $('#chatLog').addEventListener('click',e=>{const p=e.target.closest('[data-pm]');if(p&&curApi&&curApi.privateChat)writeTo(p.dataset.pm)});
+ $('#chatF').addEventListener('submit',e=>{e.preventDefault();const i=$('#chatIn'),v=i.value.trim();if(!v||!wc)return;if(chatTo&&curApi&&curApi.pm){if(!curApi.pm(chatTo.id,v)){addLine({err:true,text:'Connexion perdue : message non envoyé.'});return}}else wc.say(v,{near:chatNear});i.value=''});
  /* gestes (emotes) : envoyés au serveur, qui les montre aux joueurs proches ; affichés aussi sur son propre personnage */
  const EM_MS={salut:2500,danse:6000,bravo:2500,assis:1e9};
  $('#emoteBar').addEventListener('click',e=>{const b=e.target.closest('[data-em]');if(!b||!curApi||!curApi.emote)return;const id=b.dataset.em;
   if(curApi.emote(id)){myEm={id,until:performance.now()+EM_MS[id],x:P.x,z:P.z};const so=state.social=Object.assign({dances:0,emotes:0},state.social||{});so.emotes++}});
  function onActivity(m){if(!m||m.id!=='danse')return;const names=(m.names||[]).join(', ');addLine({act:true,text:'Danse du village : '+names+' dansent ensemble !'});toast('Danse du village : '+m.n+' joueurs dansent ensemble !');
   if(mineName&&(m.names||[]).includes(mineName)){const so=state.social=Object.assign({dances:0,emotes:0},state.social||{});so.dances++;save()}}
- $('#chatPl').addEventListener('click',async e=>{const m=e.target.closest('[data-cm]'),r=e.target.closest('[data-cr]');
+ $('#chatPl').addEventListener('click',async e=>{const m=e.target.closest('[data-cm]'),r=e.target.closest('[data-cr]'),w=e.target.closest('[data-cp]');if(w){writeTo(w.dataset.cp);return}
   if(m){wc.mute(m.dataset.cm,!wc.muted.has(m.dataset.cm));renderPlayers()}
   if(r&&wc){try{await wc.report(r.dataset.cr);toast('Signalement envoyé. Merci !')}catch(err){toast('Signalement impossible : '+err.message)}}});
  window.addEventListener('keydown',e=>{if(e.target&&/^(input|textarea|select)$/i.test(e.target.tagName)){if(e.key==='Escape'&&chatOpen){closeChat()}return}if(e.key.toLowerCase()==='t'&&wanted()&&joinedRoom&&!welcomeOpen&&!e.ctrlKey&&!e.metaKey){e.preventDefault();chatOpen?closeChat():openChat()}});

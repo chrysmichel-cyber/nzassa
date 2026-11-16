@@ -87,6 +87,9 @@ function createRealtime(o){
   if(m.t==='chat'&&m.near===true){let nm;try{nm=world.sayNear(c.sid,String(m.text||''))}catch(e){if(e instanceof WorldError&&e.status!==401)return fail(c,e.code,e.message);throw e}
    if(!nm)return;const r=world.room(c.room);if(!r)return;const out={t:'nc',m:{id:nm.id,name:nm.name,text:nm.text,t:nm.t}};
    for(const [sid,p] of r.players){if(Math.hypot(p.x-nm.x,p.z-nm.z)<=cfg.near){const cc=bySid.get(sid);if(cc)send(cc,out)}}return}
+  /* message privé : ne part qu'à l'expéditeur (écho) et au destinataire */
+  if(m.t==='pm'){let r;try{r=world.pm(c.sid,String(m.to||''),String(m.text||''))}catch(e){if(e instanceof WorldError&&e.status!==401)return fail(c,e.code,e.message);throw e}
+   if(!r)return;const out={t:'pm',m:r.m},tc=bySid.get(r.to);send(c,Object.assign({},out,{m:Object.assign({mine:true},r.m)}));if(tc)send(tc,out);metrics.pm=(metrics.pm||0)+1;return}
   if(m.t==='emote'){try{world.emote(c.sid,String(m.id||''))}catch(e){if(e instanceof WorldError&&e.status!==401)return fail(c,e.code,e.message);throw e}
    if(m.id==='danse')collective(c);return}
   if(m.t==='chat'){try{world.say(c.sid,String(m.text||''))}catch(e){if(e instanceof WorldError&&e.status!==401)return fail(c,e.code,e.message);throw e}return}

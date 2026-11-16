@@ -2,9 +2,10 @@
    En mémoire, sans persistance : rien n'est conservé après l'arrêt du serveur. Aucune donnée personnelle demandée (pseudo seulement). */
 'use strict';
 const crypto=require('crypto');
+const wordfilter=require('./wordfilter.cjs');
 const NAME_RE=/^[\p{L}\p{N}][\p{L}\p{N} '’_-]{1,15}$/u,ROOM_RE=/^[a-z0-9_-]{1,24}$/;
 const EMOTES={salut:2500,danse:6000,bravo:2500,assis:600000};
-const LIMITS={emoteGapMs:1200,maxPlayers:50,maxTotal:50,idleMs:20000,guestChatMax:120,guestChatGapMs:3000,guestChatPerMin:10,chatMax:200,history:50,chatGapMs:1500,chatPerMin:20,reportsToMute:3,muteMs:10*60*1000,bound:200};
+const LIMITS={emoteGapMs:1200,maxPlayers:50,maxTotal:50,idleMs:20000,guestChatMax:120,guestChatGapMs:3000,guestChatPerMin:10,chatMax:200,history:50,chatGapMs:1500,chatPerMin:20,reportsToMute:3,strikesToMute:3,strikeWindowMs:10*60*1000,pmMax:200,muteMs:10*60*1000,bound:200};
 class WorldError extends Error{constructor(status,code,msg){super(msg);this.status=status;this.code=code}}
 /* nettoie un message : caractères de contrôle, liens, adresses e-mail, numéros de téléphone, espaces multiples */
 function cleanChat(t){
@@ -28,6 +29,7 @@ function createWorld(opt){opt=opt||{};const now=opt.now||(()=>Date.now()),rooms=
  function join(b,ident){
   if(b.consent!==true)throw new WorldError(400,'consent_required','Le monde ouvert affiche ton pseudo et tes messages aux autres joueurs : accepte pour continuer.');
   const name=String(b.name==null?'':b.name).replace(/\s+/g,' ').trim();if(!NAME_RE.test(name))throw new WorldError(400,'bad_name','Pseudo invalide (2 à 16 caractères : lettres, chiffres, espace, apostrophe, tiret).');
+  if(wordfilter.screen(name))throw new WorldError(400,'bad_name','Ce pseudo n’est pas autorisé : choisis un pseudo respectueux.');
   const rid=String(b.room||'');if(!ROOM_RE.test(rid))throw new WorldError(400,'bad_room','Salon invalide.');
   prune();
   if(ident){for(const [o,x] of sessions)if(x.uid===ident.sub)leave(o)}/* un seul personnage par compte */
@@ -45,6 +47,10 @@ function createWorld(opt){opt=opt||{};const now=opt.now||(()=>Date.now()),rooms=
   const t=now();if(t<s.mutedUntil)throw new WorldError(403,'muted','Tu es temporairement réduit(e) au silence suite à des signalements.');
   const g=s.kind!=='authenticated',gap=g?L.guestChatGapMs:L.chatGapMs,per=g?L.guestChatPerMin:L.chatPerMin;
   const c=cleanChat(text).slice(0,g?L.guestChatMax:L.chatMax);if(!c)return null;
+  const v=wordfilter.screen(c);
+  if(v){s.strikes=(s.strikes||[]).filter(x=>t-x<L.strikeWindowMs);s.strikes.push(t);s.blocked=(s.blocked||0)+1;
+   if(s.strikes.length>=L.strikesToMute){s.strikes=[];s.mutedUntil=t+L.muteMs;throw new WorldError(403,'muted','Plusieurs messages refusés : tu es en silence pendant 10 minutes.')}
+   throw new WorldError(400,'blocked',v.msg)}
   if(t-s.lastAt<gap)throw new WorldError(429,'slow_down','Doucement : un message toutes les '+(gap/1000)+' secondes.');
   s.sent=s.sent.filter(x=>t-x<60000);if(s.sent.length>=per)throw new WorldError(429,'slow_down','Trop de messages : attends un peu.');
   if(c.toLowerCase()===s.last)throw new WorldError(400,'duplicate','Message déjà envoyé.');
@@ -53,6 +59,11 @@ function createWorld(opt){opt=opt||{};const now=opt.now||(()=>Date.now()),rooms=
  /* chat de proximité : mêmes règles que le chat du village, mais le message n'entre pas dans l'historique du salon ; la diffusion
     (joueurs à moins de NEAR unités au moment de l'envoi) est faite par la couche temps réel. */
  function sayNear(sid,text){const s=get(sid),c=check(s,text);if(!c)return null;return {id:s.pub,name:s.name,text:c,t:now(),near:true,x:s.x,z:s.z,room:s.room}}
+ /* message privé : seulement entre deux joueurs du MÊME salon, jamais dans l'historique du village ; mêmes contrôles que le chat (filtre, débit, silence). */
+ function pm(sid,toPub,text){const s=get(sid),r=rooms.get(s.room),t=r&&[...r.players.values()].find(p=>p.pub===String(toPub||''));
+  if(!t||t===s)throw new WorldError(404,'not_found','Ce joueur n’est plus dans le village.');
+  const c=check(s,text);if(!c)return null;
+  return {to:t.sid,from:s.sid,m:{id:s.pub,name:s.name,to:t.pub,toName:t.name,text:c,t:now(),pm:true}}}
  /* emotes : liste fermée, durée bornée ; « s'asseoir » dure jusqu'au prochain déplacement */
  function emote(sid,id){const s=get(sid);if(!EMOTES[id])throw new WorldError(400,'bad_emote','Emote inconnue.');const t=now();
   if(t-(s.emAt||0)<L.emoteGapMs)throw new WorldError(429,'slow_down','Doucement avec les emotes.');s.emAt=t;s.em=id;s.emUntil=t+EMOTES[id];return {id,until:s.emUntil}}
@@ -71,5 +82,5 @@ function createWorld(opt){opt=opt||{};const now=opt.now||(()=>Date.now()),rooms=
  function say_(sid,text){const s=get(sid);return say(rooms.get(s.room),s,text)}
  function move(sid,b){const s=get(sid),ox=s.x,oz=s.z;s.x=num(b.x,s.x);s.z=num(b.z,s.z);if(s.em==='assis'&&Math.hypot(s.x-ox,s.z-oz)>.05)s.em=null;s.h=num(b.h,s.h)%(Math.PI*8);s.a=[0,1,2,3].includes(b.a)?b.a:0;return s}
  const stats=()=>({players:sessions.size,rooms:rooms.size,max:L.maxTotal});
- return {join,sync,report,leave,touch,move,say:say_,sayNear,emote,emoteOf,get,view,room:id=>rooms.get(id)||null,stats,limits:L,rooms,sessions}}
+ return {join,sync,report,leave,touch,move,say:say_,sayNear,pm,emote,emoteOf,get,view,room:id=>rooms.get(id)||null,stats,limits:L,rooms,sessions}}
 module.exports={createWorld,cleanChat,cleanAvatar,WorldError,NAME_RE,EMOTES};

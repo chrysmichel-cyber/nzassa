@@ -12,7 +12,7 @@
   o=o||{};const WS=o.WebSocket||(typeof WebSocket!=='undefined'?WebSocket:null),now=o.now||(()=>Date.now()),url=o.url||wsUrl(o.apiBase),getToken=o.getToken||null,
    onFatal=o.onFatal||(()=>{}),setT=o.setTimeout||setTimeout,clearT=o.clearTimeout||clearTimeout,joinTimeout=o.joinTimeoutMs||8000,backoff=o.backoffMs||500;
   let ws=null,args=null,wanted=false,state='idle',tries=0,retryTimer=null,welcome=null,pendingJoin=null;
-  let stopped=false,needReset=false,qzHandlers=[],tblHandlers=[],actHandlers=[],nearQ=[],openHandlers=[],players=new Map(),chat=[],cursor=0,online=0,chatError=null,lastSent={x:1e9,z:1e9,h:1e9,a:-1,t:0},fatal=null;
+  let stopped=false,needReset=false,qzHandlers=[],pmHandlers=[],tblHandlers=[],actHandlers=[],nearQ=[],openHandlers=[],players=new Map(),chat=[],cursor=0,online=0,chatError=null,lastSent={x:1e9,z:1e9,h:1e9,a:-1,t:0},fatal=null;
 
   const err=(code,message,status)=>Object.assign(new Error(message||code),{code,status});
   const send=m=>{if(ws&&ws.readyState===1){ws.send(JSON.stringify(m));return true}return false};
@@ -42,6 +42,7 @@
       if(m.t==='qz'){qzHandlers.forEach(h=>{try{h(m)}catch(e){}});return}
       if(m.t==='tbl'){tblHandlers.forEach(h=>{try{h(m)}catch(e){}});return}
       if(m.t==='nc'){if(m.m){nearQ.push(Object.assign({near:true},m.m));if(nearQ.length>30)nearQ.shift()}return}/* chat de proximité : livré au prochain sync() */
+      if(m.t==='pm'){if(m.m)pmHandlers.forEach(h=>{try{h(m.m)}catch(e){}});return}
       if(m.t==='act'){actHandlers.forEach(h=>{try{h(m)}catch(e){}});return}
       if(m.t==='welcome'){welcome=m;reset(m.state||{});state='open';done(ok,m);return}
       if(m.t==='err'&&!welcome){done(ko,Object.assign(err(m.code,m.error),{fatal:FATAL.has(m.code)||!!m.fatal}));return}
@@ -85,6 +86,7 @@
    setSession(){},
    /* Quiz : messages t:'qz' reçus du serveur, envoi brut, notification de reconnexion */
    onQuiz(fn){qzHandlers.push(fn);return ()=>{qzHandlers=qzHandlers.filter(x=>x!==fn)}},onTables(fn){tblHandlers.push(fn);return ()=>{tblHandlers=tblHandlers.filter(x=>x!==fn)}},onReopen(fn){openHandlers.push(fn);return ()=>{openHandlers=openHandlers.filter(x=>x!==fn)}},
+   onPm(fn){pmHandlers.push(fn);return ()=>{pmHandlers=pmHandlers.filter(x=>x!==fn)}},pm(to,text){return send({t:'pm',to:String(to),text:String(text)})},privateChat:true,
    sendRaw(obj){return send(obj)},get open(){return state==='open'},
    get state(){return state},get kind(){return welcome?welcome.kind:null}};
   function snapshot(since){return {players:[...players.values()],chat:since==null?chat.slice():chat.filter(m=>m.n>since),cursor,online}}}
