@@ -2411,7 +2411,7 @@ const ONL=(function(){
    (on?'<p class="sub">Retrouve d’autres joueurs dans le village de ta langue et discute <b>par écrit uniquement</b> (pas d’images, pas de liens, pas de vocal).</p>'+
     (fixed?'':'<label for="onlApi" class="sub">Adresse du serveur N’Zassa</label><input id="onlApi" type="url" inputmode="url" placeholder="https://…" value="'+esc(s.api||'')+'" autocomplete="off">')+
     '<label><input id="onlConsent" type="checkbox"'+(s.onlineConsent?' checked':'')+'><span>J’accepte que mon pseudo, mon personnage, ma position et mes messages soient visibles des autres joueurs du village. Je ne partage aucune information personnelle (nom réel, adresse, téléphone, école).</span></label>'+
-    '<div class="row"><button class="btn ghost sm" data-onl="test">Tester le serveur</button></div><p class="pmsg" id="onlMsg" role="status">'+(!b?'Aucun serveur configuré : le monde ouvert nécessite un serveur (voir docs/MONDE_OUVERT.md).':!validBase(b)?'Adresse invalide (https:// requis).':'')+'</p>'
+    '<div class="row"></div><p class="pmsg" id="onlMsg" role="status">'+(!b?'Aucun serveur configuré : le monde ouvert nécessite un serveur (voir docs/MONDE_OUVERT.md).':!validBase(b)?'Adresse invalide (https:// requis).':'')+'</p>'
     :'<p class="sub">Tu joues seul(e) dans ton village : rien n’est envoyé sur Internet.</p>')+'</div>'}
  async function test(){const m=$('#onlMsg'),b=cfgBase();if(!validBase(b)){m.textContent='Adresse invalide (https:// requis).';return}m.textContent='Test en cours…';
   try{const r=await fetch(b+'/v1/health',{cache:'no-store'});const j=await r.json();m.textContent=j&&j.ok?'Serveur joignable.':'Réponse inattendue.'}catch(e){m.textContent='Serveur injoignable (adresse, HTTPS ou CORS).'}}
