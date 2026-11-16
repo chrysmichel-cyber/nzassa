@@ -930,6 +930,27 @@ async function oralAction(act){
 /* ---- Relecture par des locuteurs (validation déclarative, voir js/review/review.js) ---- */
 const RV=LCA.review;
 let rvLang=null,rvPage=0,rvMsg='',rvFilter='all',rvDirty=0;
+/* Avis des visiteurs (js/feedback/feedback.js) : note choisie, message affiché, avis envoyé pendant cette visite. */
+let avisNote=0,avisMsg='',avisSent=false;
+const AVIS_ERR={note:'Choisis une note de 1 à 5 étoiles.',texte:'Écris au moins une phrase : ce que tu as aimé ou ce qu’on peut améliorer.',email:'Adresse e-mail invalide (elle est facultative).',long:'Ton message est trop long (1000 caractères au plus).',not_configured:'L’envoi des avis n’est pas encore activé sur ce site.',offline:'Pas de connexion : ton avis n’a pas été envoyé. Réessaie plus tard.',refused:'Ton avis a été refusé par le serveur. Réessaie plus tard.'};
+function avisScreen(){
+ if(avisSent)return back('home')+'<h2>Merci pour ton avis !</h2><p class="sub">L’équipe BugSquash lit chaque message pour améliorer N’Zassa.</p><div class="row"><button class="btn warm" data-m="home">Retour à l’accueil</button><button class="btn ghost" data-avis="again">Donner un autre avis</button></div>';
+ const st=[1,2,3,4,5].map(n=>'<button type="button" class="avstar" data-avn="'+n+'" aria-pressed="'+(avisNote>=n)+'" aria-label="'+n+' sur 5">★</button>').join('');
+ return back('home')+'<h2>Donner mon avis</h2><p class="sub">Dis-nous ce que tu penses du jeu. Ton avis est lu uniquement par l’équipe du projet.</p><div class="accform oform">'+
+  '<div><b style="font-size:13px">Ta note</b><div class="avstars" role="group" aria-label="Note sur 5">'+st+'</div></div>'+
+  '<label>Ce que tu as aimé<textarea id="avAime" maxlength="1000" rows="3"></textarea></label>'+
+  '<label>Ce qu’on peut améliorer<textarea id="avAmel" maxlength="1000" rows="3"></textarea></label>'+
+  '<label>Ton prénom <small>(facultatif)</small><input id="avNom" type="text" maxlength="60" autocomplete="given-name"></label>'+
+  '<label>Ton e-mail <small>(facultatif, si tu veux une réponse)</small><input id="avMail" type="email" maxlength="120" autocomplete="email"></label>'+
+  '<p class="sub" id="avMsg" role="status" aria-live="polite">'+esc(avisMsg)+'</p><div class="row"><button class="btn warm" data-avis="send">Envoyer mon avis</button></div></div>'}
+async function avisSend(btn){
+ const v=id=>{const el=$('#'+id);return el?el.value:''};
+ const say2=t=>{avisMsg=t;const m=$('#avMsg');if(m)m.textContent=t};
+ btn.disabled=true;say2('Envoi…');
+ const r=await LCA.feedback.send(window.supabaseClient,{note:avisNote,aime:v('avAime'),ameliorer:v('avAmel'),nom:v('avNom'),email:v('avMail'),langue_jeu:state.lang&&LANGS[state.lang]?LANGS[state.lang].name:null});
+ btn.disabled=false;
+ if(r.ok){avisSent=true;avisMsg='';avisNote=0;showWelcome('avis');return}
+ say2(AVIS_ERR[r.error]||AVIS_ERR.refused)}
 const RV_PER=12;
 const rvStore=()=>{if(!state.review||!state.review.items)state.review=RV.empty();return state.review};
 const RV_ERR={reviewer:'Renseigne d’abord ton nom de relecteur.',native:'Seules les personnes qui se déclarent locutrices de la langue peuvent donner un avis.',decision:'Avis invalide.',suggestion:'Écris ta proposition de correction.',name:'Écris ton nom (ou un pseudo).',format:'Fichier non reconnu : ce n’est pas un fichier de relecture N’Zassa.',reviewer2:'Le fichier ne contient pas de relecteur valide.',toomany:'Fichier trop gros.'};
@@ -1011,7 +1032,7 @@ function menuHtml(){
    '<button class="mbtn cont" data-m="continue"'+(cont?'':' disabled')+'>'+ti('resume')+'<span><b>Continuer</b><small>'+(cont?'Reprendre en '+esc(lang().name):'Aucune sauvegarde pour le moment')+'</small></span></button></div>'+
    '<button class="btn ghost sm" data-pwa="install" type="button" style="margin:8px 0">Installer N’Zassa</button>'+
    '<div class="hm-tiles">'+tile('regions','Régions')+tile('learn','Apprendre')+tile('oral','Patrimoine oral')+tile('parcours','Mon parcours')+tile('collection','Collection')+tile('review','Relecture')+tile('account','Profil')+tile('settings','Paramètres')+'</div>'+
-   '<div class="hm-mode">'+accCard()+ONL.card()+'</div><button class="hm-credits" data-m="credits">Crédits et licences</button></section></div>'+
+   '<div class="hm-mode">'+accCard()+ONL.card()+'</div><div class="hm-foot"><button class="hm-credits" data-m="avis">Donner mon avis</button><button class="hm-credits" data-m="credits">Crédits et licences</button></div></section></div>'+
    '<p class="mload">'+(worldReady?'Monde prêt.':'Chargement du monde…')+'</p>'}
  if(sc==='new'||sc==='learn')return back('home')+'<h2>'+(sc==='new'?'Nouvelle aventure':'Apprendre une langue')+'</h2><p class="sub">Touche une pastille sur la carte pour choisir un peuple et sa langue. Chaque langue a son décor et sa propre progression.</p>'+mapBlock('menu',mapSel||state.lang)+'<details class="lst"><summary>Voir la liste des langues</summary><div class="lcards">'+Object.values(LANGS).map(L=>langCard(L,hasProgress(L.id)?'<i>Progression en cours</i>':'')).join('')+'</div></details>';
 
@@ -1046,6 +1067,7 @@ function menuHtml(){
   '<div class="row"><button class="btn ghost" data-m="wipe">'+(menuConfirm==='wipe'?'Confirmer : effacer toute la progression':'Effacer toutes mes données')+'</button></div>'}
  if(sc==='account')return accountScreen();
  if(sc==='review')return reviewScreen();
+ if(sc==='avis')return avisScreen();
  if(sc==='oral'||sc==='oralnew'||sc==='oralview')return oralScreen(sc);
  if(sc==='credits'){const v=DATA_CHECK;return back('home')+STYLIZED('decor')+STYLIZED('histoire')+'<h2>Crédits</h2><p>« N’Zassa : un continent, mille cultures, une aventure ». </p><p class="sub"><b>Projet pour le P.A.S Challenge Dakar 2026</b>, réalisé par l’équipe <b>BugSquash</b> :</p><ul class="cl"><li>GUINDO CHRYS MICHEL CHECK</li><li>Kouame Akissi Noëlle Desiree</li><li>Konan Ange Stéphane</li><li>OYETOLA ADEKOUEWOU AYILA HAMIDE</li></ul><ul class="cl"><li><b>3D</b> : three.js r128, licence MIT. Tous les décors et personnages sont générés par du code, aucun modèle externe.</li><li><b>Polices</b> : Bricolage Grotesque et Figtree, via Google Fonts.</li><li><b>Contenus</b> : mots, contes et recettes rédigés pour ce prototype par une IA. Ils ne sont ni sourcés ni validés et ne doivent pas être pris pour des données linguistiques authentiques.</li></ul><h3 style="color:var(--accent)">Contrôle des données</h3><p class="sub">'+v.langs+' langues, '+v.words+' mots. '+(v.err.length?'<b style="color:var(--bad)">'+v.err.length+' erreur(s)</b> : '+esc(v.err.slice(0,3).join(' ; ')):'Aucune erreur technique.')+' '+v.warn.length+' avertissement(s)'+(v.warn.length?' : '+esc(v.warn.slice(0,3).join(' ; ')):'')+'.</p>'}
  return ''}
@@ -1054,6 +1076,8 @@ function showWelcome(sc){
  const c=$('#welcomeCard');c.classList.remove('in');c.innerHTML=menuHtml();void c.offsetWidth;c.classList.add('in');
  if(menuScreen==='home'&&LCA.pwa)LCA.pwa.render();
  LCA.i18n.apply(c);const f=$('button:not([disabled])',c);if(f&&menuScreen!=='home')f.focus();if(typeof ONL!=='undefined')ONL.sync()}
+$('#welcomeCard').addEventListener('click',e=>{const s=e.target.closest('[data-avn]');if(s){avisNote=+s.dataset.avn;$$('[data-avn]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.avn<=avisNote)));return}
+ const b=e.target.closest('[data-avis]');if(!b)return;if(b.dataset.avis==='again'){avisSent=false;showWelcome('avis');return}if(!b.disabled)avisSend(b)});
 $('#welcomeCard').addEventListener('change',e=>{if(e.target.id==='voiceSel'){state.settings=state.settings||{};state.settings.voice=e.target.value;save();say(lang().hello)}});
 $('#welcomeCard').addEventListener('click',e=>{const b=e.target.closest('[data-play]');if(b){ONL.setPlay(b.dataset.play);showWelcome('home');return}if(e.target.closest('[data-onl=test]')){const a=$('#onlApi');if(a)ONL.setApi(a.value);ONL.test()}});
 $('#welcomeCard').addEventListener('change',e=>{if(e.target.id==='onlApi'){ONL.setApi(e.target.value);showWelcome('home')}if(e.target.id==='onlConsent'){ONL.setConsent(e.target.checked)}});
@@ -1091,6 +1115,7 @@ $('#welcomeCard').addEventListener('click',e=>{
   if(m==='oral'){oralShow('oral');return}
   if(m==='review'){rvMsg='';rvPage=0}
   if(m==='account'){accMsg='';accConfirm=false}
+  if(m==='avis'){avisMsg='';avisSent=false;avisNote=0}
   if(m==='new'||m==='learn'){menuMode=m}
   if(m==='regions')menuMode='regions';
   showWelcome(m)}

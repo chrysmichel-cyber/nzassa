@@ -28,8 +28,8 @@ select policyname, cmd, roles, qual, with_check from pg_policies where schemanam
 select id, username
 from public.profiles
 where char_length(username) not between 2 and 40
-   or username ~ '[\u0001-\u001F\u007F-\u009F­​-‏ -‮⁠-⁤﻿<>&"\\/@]'
-   or username ~ '^\s|\s$' or username ~ '  ' or username ~ '[\t\n\r\f\v   -     　]';
+   or username ~ '[\u0001-\u001F\u007F-\u009F\u00AD\u200B-\u200F\u2028-\u202E\u2060-\u2064\uFEFF<>&"\\/@]'
+   or username ~ '^\s|\s$' or username ~ '  ' or username ~ '[\t\n\r\f\v\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]';
 
 -- 7. Doublons insensibles à la casse déjà présents (devrait renvoyer 0 ligne si username_key est unique).
 select lower(username) as k, count(*) from public.profiles group by 1 having count(*) > 1;

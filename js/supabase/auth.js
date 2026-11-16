@@ -17,6 +17,8 @@
         const code = String(error.code || '').toLowerCase();
         const msg = String(error.message || '').toLowerCase();
         const status = error.status;
+        /* avant le test réseau : supabase-js peut classer cette erreur 500 du déclencheur parmi les erreurs « réessayables » */
+        if (/database error saving new user/.test(msg)) return 'profile_error';
         if (error.name === 'AuthRetryableFetchError' || status === 0 || /failed to fetch|networkerror|load failed|network request failed/.test(msg)) return 'offline';
         if (code === 'user_already_exists' || code === 'email_exists' || /already (been )?registered|already exists/.test(msg)) return 'email_taken';
         if (code === 'weak_password' || /password (is )?(too )?(short|weak)|at least \d+ characters/.test(msg)) return 'weak_password';

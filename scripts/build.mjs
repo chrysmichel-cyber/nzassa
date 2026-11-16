@@ -11,7 +11,7 @@ const cfg = resolveConfig({ env: process.env, fileText: existsSync(local) ? read
 if (cfg.error) { console.error('ERREUR : ' + cfg.error); process.exit(1); }
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
-for (const p of ['index.html', 'manifest.webmanifest', 'css', 'js', 'img', 'vendor']) cpSync(join(root, p), join(out, p), { recursive: true });
+for (const p of ['index.html', 'avis.html', 'manifest.webmanifest', 'css', 'js', 'img', 'vendor']) cpSync(join(root, p), join(out, p), { recursive: true });
 writeFileSync(join(out, 'js/supabase/config.js'), renderConfig(cfg));
 /* PWA : liste de précache (fichiers essentiels, hors masques du musée chargés à l'usage) et identifiant de version = empreinte du contenu. */
 const walk = (d, base = '') => readdirSync(join(d, base)).flatMap(n => { const rel = base ? base + '/' + n : n; return statSync(join(d, rel)).isDirectory() ? walk(d, rel) : [rel]; });

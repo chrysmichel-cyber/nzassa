@@ -503,7 +503,7 @@ body.learn-open #joy,body.learn-open #act{display:none!important}
 .amap .mdot.dn circle:first-child{r:7}
 
 /* ---- Patrimoine oral ---- */
-.oform select,.oform textarea{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:600 15px/1.35 inherit}
+.oform select,.oform textarea{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:600 15px/1.35 var(--body,inherit)}
 .oform textarea{resize:vertical;min-height:90px}
 .oform select option{color:#000}
 .orec{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:1px dashed var(--line);background:rgba(255,255,255,.04)}
@@ -659,6 +659,10 @@ body.kids .btn{min-height:56px}
 .tile svg{width:28px;height:28px;color:var(--accent)}.tile b{font:700 12.5px var(--body,inherit);line-height:1.15}
 .tile:hover{background:rgba(245,154,46,.16);border-color:var(--accent);transform:translateY(-2px)}.tile:active{transform:scale(.97)}
 .hm-mode{display:grid;gap:8px}.hm-mode .playcard,.hm-mode .acc{margin:0}
+.hm-foot{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px}
+.avstars{display:flex;gap:4px;margin-top:4px}
+.avstar{border:0;background:none;padding:0 2px;font-size:32px;line-height:1;min-width:44px;min-height:44px;color:rgba(255,255,255,.25);cursor:pointer;transition:color .12s,transform .12s}
+.avstar[aria-pressed=true]{color:var(--accent)}.avstar:hover{transform:scale(1.1)}.avstar:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .hm-credits{justify-self:center;border:0;background:none;color:#d8c6ac;text-decoration:underline;text-underline-offset:3px;font-size:13px;min-height:36px;cursor:pointer}
 #welcome.home .mload{text-align:center;margin:6px 0 0}
 @media (max-width:860px){

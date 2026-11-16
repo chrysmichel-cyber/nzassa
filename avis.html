@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Avis des visiteurs · N’Zassa</title>
+<style>
+:root{--bg:#1a0c07;--card:#2a1710;--line:rgba(255,230,190,.22);--cream:#f5e6d3;--muted:#d8c6ac;--accent:#f59a2e;--bad:#ff8a7a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--cream);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+h1{margin:0 0 4px;font-size:24px}h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 16px}
+label{display:grid;gap:4px;font-weight:700;font-size:13px}
+input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:600 15px/1.2 system-ui,sans-serif}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
+button{min-height:42px;padding:8px 16px;border-radius:12px;border:1px solid var(--accent);background:var(--accent);color:#1a0c07;font:700 14px system-ui,sans-serif;cursor:pointer}
+button.ghost{background:none;color:var(--cream);border-color:var(--line)}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#msg{min-height:1.4em;color:var(--muted)}#msg.bad{color:var(--bad)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.stats div{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.stats b{display:block;font-size:22px;color:var(--accent)}.stats span{font-size:12px;color:var(--muted)}
+.avis{border-top:1px solid var(--line);padding:12px 0;break-inside:avoid}
+.avis:first-child{border-top:0}
+.avis header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.avis .note{color:var(--accent);font-size:16px;letter-spacing:1px}
+.avis h3{margin:8px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.avis p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.print-only{display:none}
+@media print{
+ :root{--cream:#111;--muted:#555;--accent:#b35f00;--line:#ccc}
+ body{background:#fff;font-size:11pt}
+ main{max-width:none;padding:0}
+ .screen-only{display:none!important}
+ .print-only{display:block}
+ .card,.stats div{background:#fff;border-color:#ccc}
+ @page{margin:16mm}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>N’Zassa · <span>Avis des visiteurs</span></h1>
+  <p class="sub screen-only">Page réservée à l’équipe. Connecte-toi avec un compte administrateur (voir supabase/06_avis_visiteurs.sql).</p>
+  <p class="sub print-only" id="printInfo"></p>
+
+  <section id="login" class="card screen-only" hidden>
+    <form id="loginForm" class="grid">
+      <label>E-mail<input id="email" type="email" autocomplete="email" required></label>
+      <label>Mot de passe<input id="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Se connecter</button>
+    </form>
+  </section>
+
+  <section id="tools" class="card screen-only" hidden>
+    <div class="grid">
+      <label>Du<input id="from" type="date"></label>
+      <label>Au<input id="to" type="date"></label>
+      <button id="pdf" type="button">Exporter en PDF</button>
+      <button id="logout" class="ghost" type="button">Se déconnecter</button>
+    </div>
+  </section>
+
+  <p id="msg" class="screen-only" role="status" aria-live="polite"></p>
+  <div id="stats" class="stats" hidden></div>
+  <section id="list" class="card" hidden></section>
+</main>
+<script src="vendor/supabase-js-2.109.0.umd.js"></script>
+<script src="js/supabase/config.js"></script>
+<script src="js/supabase/client.js"></script>
+<script src="js/feedback/admin.js"></script>
+</body>
+</html>

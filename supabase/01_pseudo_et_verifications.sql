@@ -9,10 +9,10 @@
 alter table public.profiles
   add constraint profiles_username_format check (
     char_length(username) between 2 and 40
-    and username !~ '[\u0001-\u001F\u007F-\u009F­​-‏ -‮⁠-⁤﻿<>&"\\/@]'
+    and username !~ '[\u0001-\u001F\u007F-\u009F\u00AD\u200B-\u200F\u2028-\u202E\u2060-\u2064\uFEFF<>&"\\/@]'
     and username !~ '^\s|\s$'
     and username !~ '  '
-    and username !~ '[\t\n\r\f\v   -     　]'
+    and username !~ '[\t\n\r\f\v\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]'
   ) not valid;
 -- Après avoir corrigé à la main les éventuelles lignes listées par la requête 6 de 00_... :
 --   alter table public.profiles validate constraint profiles_username_format;
