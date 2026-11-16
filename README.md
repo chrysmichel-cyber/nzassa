@@ -2,7 +2,8 @@
 
 Jeu d’aventure culturelle et éducatif : on explore des villages d’Afrique, on parle à leurs habitants, on ramasse des ingrédients, on écoute des contes, on apprend des mots, on passe des quiz et on enregistre des récits. **58 langues**, cinq régions, un rendu **3D** (par défaut) et un rendu **2D** peint, une seule progression.
 
-Projet pour le **P.A.S Challenge Dakar 2026**, équipe **BugSquash** : GUINDO CHRYS MICHEL CHECK, Kouame Akissi Noëlle Desiree, Konan Ange Stéphane, OYETOLA ADEKOUEWOU AYILA HAMIDE.
+Projet pour le **P.A.S Challenge Dakar 2026**, équipe **BugSquash** : M. Guindo Chrys Michel Check, Mme Kouame Akissi Noëlle Desiree, M. Konan Ange Stéphane, M.
+Oyetola Adekouewou Ayila Hamide et M. N'guessan Diby konanbouo Georges Mikaël
 
 > **À lire d’abord : les contenus de langues sont des brouillons.** Mots, contes, recettes et textes d’histoire ont été rédigés pour ce prototype par une IA. Ils ne sont ni sourcés ni validés par des locuteurs, et ne doivent pas être pris pour des données linguistiques authentiques. Le jeu l’affiche (« Brouillon », « Contenu partiel », « à compléter ») au lieu d’inventer. La prononciation est une voix de synthèse approximative.
 
